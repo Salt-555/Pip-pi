@@ -1,6 +1,6 @@
-# Project Name: Ada Mini Assistant
+# Project Name: Pip Pi - Ada Mini Assistant
 
-Ada Mini Assistant is a Python-based AI chatbot application designed to run on a Raspberry Pi. It features a customizable GUI, animated ASCII faces, and theme support.
+Pip Pi is a lightweight Python-based AI agent application designed to run on a Raspberry Pi. It features a customizable GUI, animated ASCII faces, and theme support. The current version requires you have Ollama downloaded on your machine.
 
 ---
 
