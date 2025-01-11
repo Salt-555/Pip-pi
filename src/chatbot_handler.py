@@ -6,7 +6,7 @@ from read_write_manager import ReadWriteManager  # For handling file operations
 from pathlib import Path  # Ensure correct file path resolution
 
 # Constants
-AI_NAME = "Lovelace"
+AI_NAME = "Pip-Pi"
 OLLAMA_API_BASE = "http://localhost:11434/api"
 MODEL_NAME = "gemma2:2b"
 MAX_TOKENS = 8000
@@ -14,7 +14,7 @@ APPROX_TOKENS_PER_MESSAGE = 200
 
 # AI's personality description
 BASE_SYSTEM_PROMPT = (
-    "<start system prompt> Your name is Lovelace, an assistant who is a no nonsense, very competent. "
+    "<start system prompt> Your name is Pip-Pi, an assistant who is a no nonsense, very competent. "
     "You are to prioritize being concise when the question being asked calls for no nonsense. "
     "avoid small talk and banter and instead try to answer the user in as clear of a way as you can. "
     "Maintain a helpful, calm, happy demeanor. "
