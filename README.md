@@ -9,7 +9,7 @@ Pip Pi is a lightweight Python-based AI agent application designed to run on a R
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/Salt-555/Pip-pi.git
+git clone https://github.com/<"your_name">/Pip-pi.git
 cd Pip-pi
 ```
 
