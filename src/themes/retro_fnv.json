@@ -1,0 +1,32 @@
+{
+    "BACKGROUND_COLOR": "#000000",
+    "TEXT_COLOR": "#FFBF00",
+    "ACCENT_COLOR": "#FFBF00",
+    "AI_COLOR": "#FFBF00",
+    "BUTTON_COLOR": "#1A1A1A",
+    "BUTTON_ACTIVE_COLOR": "#333333",
+    "INPUT_BG_COLOR": "#1A1A1A",
+    "CPU_TREND_COLOR": "#FFBF00",
+    "MEMORY_TREND_COLOR": "#333333",
+    "BUTTON_STYLE": {
+        "corner_radius": 0,
+        "fg_color": "#1A1A1A",
+        "hover_color": "#333333",
+        "text_color": "#FFBF00",
+        "font": ["Roboto", 14]
+    },
+    "TEXTBOX_STYLE": {
+        "corner_radius": 0,
+        "font": ["Courier New", 16],
+        "text_color": "#FFBF00",
+        "fg_color": "#000000",
+        "wrap": "word"
+    },
+    "INPUT_TEXTBOX_STYLE": {
+        "corner_radius": 0,
+        "font": ["Courier New", 16],
+        "text_color": "#FFBF00",
+        "fg_color": "#1A1A1A",
+        "wrap": "word"
+    }
+}
