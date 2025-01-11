@@ -1,4 +1,4 @@
-# Project Name: Pip Pi - Ada Mini Assistant
+Pip Pi - Mini Assistant
 
 Pip Pi is a lightweight Python-based AI agent application designed to run on a Raspberry Pi. It features a customizable GUI, animated ASCII faces, and theme support. The current version requires you have Ollama downloaded on your machine.
 
