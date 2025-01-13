@@ -18,3 +18,9 @@ class ReadWriteManager:
             return f"[Error: File '{filename}' not found.]"
         with file_path.open("r", encoding="utf-8") as file:
             return file.read()
+
+    def write_file(self, filename, content):
+        file_path = self.base_folder / filename
+        with file_path.open("w", encoding="utf-8") as file:
+            file.write(content)
+

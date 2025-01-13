@@ -129,7 +129,8 @@ class AdaMiniApp:
         self.settings_button.grid(row=0, column=3, padx=(10, 0), sticky="ew")
 
     def init_handlers(self):
-        # Ensure face_label_frame is created before using it in handlers
+        
+         # Ensure face_label_frame is created before using it in handlers
         if not hasattr(self, 'face_label_frame'):
             self.create_face_frame()
 
@@ -150,8 +151,7 @@ class AdaMiniApp:
             memory_trend_color=self.THEME["MEMORY_TREND_COLOR"]
         )
         self.system_monitor.update()
-
-        self.chatbot_handler = ChatbotHandler(self.animation_manager)
+        self.chatbot_handler = ChatbotHandler(self.animation_manager, self)
 
     def play_startup_sound(self):
         """Play the startup sound using the global volume from settings."""
@@ -240,6 +240,28 @@ class AdaMiniApp:
             args=(user_input, self.chat_window),
             daemon=True
         ).start()
+
+    def show_confirmation_dialog(self, filename, content):
+        dialog = ctk.CTkToplevel(self.root)
+        dialog.title("Confirm Write")
+        dialog.geometry("300x200")
+        
+        label = ctk.CTkLabel(dialog, text=f"Write to file '{filename}'?", wraplength=280)
+        label.pack(pady=10)
+        
+        yes_button = ctk.CTkButton(dialog, text="Yes", command=lambda: [self.confirm_write(dialog, filename, content)])
+        yes_button.pack(side="left", padx=10, pady=20)
+
+        no_button = ctk.CTkButton(dialog, text="No", command=dialog.destroy)
+        no_button.pack(side="right", padx=10, pady=20)
+
+    def confirm_write(self, dialog, filename, content):
+        dialog.destroy()
+        self.chatbot_handler.read_write_manager.write_file(filename, content)
+        self.chat_window.configure(state="normal")
+        self.chat_window.insert("end", f"\nFile '{filename}' successfully written.\n", "ai_name")
+        self.chat_window.configure(state="disabled")
+
 
     def on_close(self):
         print("Stopping model: gemma2:2b ...")

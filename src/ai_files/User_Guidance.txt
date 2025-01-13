@@ -1,0 +1,74 @@
+---
+
+# User Guide for **Pip-Pi AI Assistant**
+
+Welcome to the **Pip-Pi AI Assistant**! This guide will walk you through the key features and how to use them effectively.
+
+---
+
+## Key Features
+
+1. **Interactive Chat**
+   - Type your questions or commands in the input field.
+   - Press **Enter** or click **Send** to communicate with Pip-Pi.
+
+2. **Animations**
+   - Pip-Pi uses ASCII animations to express states like:
+     - **Welcome**
+     - **Idle**
+     - **Thinking**
+     - **Replying**
+     - **Shutting Down**
+
+3. **Settings Menu**
+   - Access the **Settings** by clicking the **Settings** button.
+   - Customize:
+     - **Volume**: Adjust the global sound level.
+     - **Themes**: Switch between available themes for a personalized look.
+
+4. **System Monitor**
+   - A built-in **Vitals Monitor** tracks CPU and memory usage in real-time.
+   - Located in the side panel for quick insights into system performance.
+
+5. **File Management**
+   - Pip-Pi has access to its own `ai_files` folder.
+   - To view available files, ask:  
+     **"What files are in the ai_files folder?"**
+   - To read a file, type:  
+     `[read] "filename"`
+
+---
+
+## Getting Started
+
+1. Launch the program by running `ada_mini.py`.
+2. After a brief startup animation and sound, the main interface will appear.
+3. Begin interacting with Pip-Pi by typing your first question!
+
+---
+
+## Troubleshooting
+
+- **Startup Sound Not Playing?**
+   - Ensure the sound file `Sounds/Start.mp3` exists in the correct directory.
+   - Check your system's audio settings.
+   
+- **Settings Not Saving?**
+   - Make sure the `settings.json` file is accessible and writable.
+
+- **Animations Not Displaying?**
+   - Ensure the Python `Pillow` library is installed for GIFs.
+   - ASCII animations require no extra setup.
+
+---
+
+## Tips
+
+- Use clear and concise language for best results.
+- Customize the theme to reduce eye strain during prolonged use.
+- Periodically check the **Vitals Monitor** to avoid overloading your system.
+
+---
+
+Enjoy your journey with **Pip-Pi**!
+
