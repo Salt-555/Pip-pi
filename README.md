@@ -53,12 +53,16 @@ Additionally, the app requires the [Ollama](https://ollama.ai/) model server. In
 
 ## Features
 
-- **Chatbot Integration**: Powered by a local AI model, Lovelace.
-- **Custom Themes**: Load and apply different themes for the GUI.
-- **Animated Faces**: ASCII and GIF-based animations for interactive feedback.
-- **System Monitor**: Real-time CPU and memory usage graphs.
-- **Settings Menu**: Control volume and theme preferences.
-- **Startup Sound**: Customizable sound played on launch.
+- **Chatbot Integration**:  Powered by a local AI model, currently managed through ollama (model swappable via                             one variable in chatbot_manager.py).
+- **Custom Themes**:        Load and apply different themes for the GUI.
+  
+- **Animated Faces**:       ASCII and GIF-based animations for interactive feedback.
+  
+- **System Monitor**:       Real-time CPU and memory usage graphs.
+  
+- **Settings Menu**:        Control volume and theme preferences.
+  
+- **Startup Sound**:        Customizable sound played on launch.
 
 ---
 
