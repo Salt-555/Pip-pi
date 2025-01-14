@@ -1,0 +1,1 @@
+This is the content of first_write_test.txt

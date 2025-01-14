@@ -25,6 +25,15 @@ class AdaMiniApp:
         # Initialize main window
         self.root = ctk.CTk()
 
+        # Center the window on the screen
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        window_width = 1000
+        window_height = 800
+        center_x = int((screen_width - window_width) / 2)
+        center_y = int((screen_height - window_height) / 2)
+        self.root.geometry(f"{window_width}x{window_height}+{center_x}+{center_y}")
+
         # Create main UI elements
         self.create_main_frame()
         self.create_chat_window()
@@ -37,7 +46,6 @@ class AdaMiniApp:
         # Set AI_NAME dynamically from ChatbotHandler
         self.AI_NAME = self.chatbot_handler.ai_name
         self.root.title(f"{self.AI_NAME} Assistant")
-        self.root.geometry("1000x800")
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         self.root.rowconfigure(0, weight=1)
         self.root.columnconfigure(0, weight=1)
