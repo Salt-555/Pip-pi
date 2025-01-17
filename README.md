@@ -1,131 +1,79 @@
 Pip Pi - Mini Assistant
+Pip Pi is a lightweight Python-based AI agent application designed to run on a Raspberry Pi 5 or stronger hardware. It features a customizable GUI, animated ASCII faces, theme support, and system monitoring capabilities, powered by the Ollama model server running Gemma2 2B.
+Features
 
-Pip Pi is a lightweight Python-based AI agent application designed to run on a Raspberry Pi 5 or anything stronger. It features a customizable GUI, animated ASCII faces, and theme support. The current version requires you have Ollama downloaded on your machine. Gemma2 (2 billion perameter version) makes up the brans, but this is easily changed to something bigger if your system can support it. You can expect better/ more consistant results with bigger models. 
+Local AI Integration: Powered by Ollama with Gemma2 2B (configurable in chatbot_handler.py)
+Real-time System Monitoring: CPU and memory usage tracking with matplotlib visualization
+Advanced Animation System: ASCII character animations and GIF support
+Theme Management: Customizable UI themes via JSON configuration
+Event-driven Architecture: Robust event management system for UI updates
+Resource Management: Efficient file I/O and settings persistence
+Sound Support: Configurable audio feedback with volume control
 
----
+Setup Instructions
 
-## Setup Instructions
+Clone the repository:
 
-### Step 1: Clone the Repository, 
-
-```bash
-git clone https://github.com/Salt-555/Pip-pi.git
-```
-
-### then navigate to the project folder
-
-```bash
+bashCopygit clone https://github.com/Salt-555/Pip-pi.git
 cd Pip-pi
-```
-### Step 2: Set Up a Virtual Environment
 
-Python virtual environments help manage dependencies and avoid conflicts.
+Create and activate virtual environment:
 
-1. Create a virtual environment:
+bashCopypython3 -m venv venv
 
-   ```bash
-   python3 -m venv venv
-   ```
+# Linux/macOS
+source venv/bin/activate
 
-2. Activate the virtual environment:
-   - On Linux/macOS:
-     ```bash
-     source venv/bin/activate
-     ```
-   - On Windows:
-     ```bash
-     .\venv\Scripts\activate
-     ```
+# Windows
+.\venv\Scripts\activate
 
-### Step 3: Install Requirements
+Install dependencies:
 
-Install the necessary Python packages using the `requirements.txt` file:
+bashCopypip install -r requirements.txt
 
-```bash
-pip install -r requirements.txt
-```
+Install and start Ollama:
 
-Additionally, the app requires the [Ollama](https://ollama.ai/) model server. Install Ollama and ensure it is running:
 
-1. Follow the installation instructions on the [Ollama website](https://ollama.ai/).
-2. Start the server by running:
-   ```bash
-   ollama serve
-   ```
+Follow installation instructions at Ollama's website
+Start the server:
 
----
+bashCopyollama serve
+Core Components
 
-## Features
+ada_mini.py: Main application entry point with event management
+system_monitor.py: Real-time system metrics visualization
+ada_animation_manager.py: Animation system with ASCII/GIF support
+chatbot_handler.py: Ollama integration and conversation management
+gui_manager.py: CustomTkinter-based UI with theme support
+theme_manager.py: JSON-based theme configuration system
+settings_manager.py: Persistent settings and configuration
+read_write_manager.py: File operations management
 
-- **Chatbot Integration**:  Powered by a local AI model, currently managed through ollama (model swappable via one variable in chatbot_manager.py).
-  
-- **Custom Themes**:        Load and apply different themes for the GUI.
-  
-- **Animated Faces**:       ASCII and GIF-based animations for interactive feedback.
-  
-- **System Monitor**:       Real-time CPU and memory usage graphs.
-  
-- **Settings Menu**:        Control volume and theme preferences.
-  
-- **Startup Sound**:        Customizable sound played on launch.
+Running the Application
+bashCopypython ada_mini.py
+Theme Customization
+Create new themes by adding JSON files to the themes/ directory with the following structure:
+jsonCopy{
+    "BACKGROUND_COLOR": "#hex",
+    "TEXT_COLOR": "#hex",
+    "ACCENT_COLOR": "#hex",
+    "AI_COLOR": "#hex",
+    "BUTTON_COLOR": "#hex",
+    "BUTTON_ACTIVE_COLOR": "#hex",
+    "CPU_TREND_COLOR": "#hex",
+    "MEMORY_TREND_COLOR": "#hex",
+    "BUTTON_STYLE": {
+        "font": ["font_name", size],
+        "additional_properties": "values"
+    }
+}
+Troubleshooting
 
----
+Environment Issues: Verify virtual environment activation
+Missing Packages: Run pip install -r requirements.txt
+Ollama Connection: Ensure Ollama server is running (ollama serve)
+Audio Issues: Check Sounds/Start.mp3 exists
+Theme Loading: Verify JSON theme files are properly formatted
 
-## File Structure
-
-- `ada_mini.py`: Main application entry point. (run this)
-- `settings_menu.py`: Settings menu logic.
-- `settings_manager.py`: Handles loading and saving settings.
-- `theme_manager.py`: Manages themes.
-- `system_monitor.py`: Monitors system vitals.
-- `ada_animation_manager.py`: Handles ASCII and GIF animations.
-- `chatbot_handler.py`: Manages chatbot interactions. (AI set up lives here)
-- `read_write_manager.py`: Handles file reading and writing operations.
-- `ASCII_Face.py`: ASCII animation frames.
-
----
-
-## Running the Application
-
-After setting up the environment and installing the requirements:
-
-```bash
-python ada_mini.py
-```
-
----
-
-## Customizing Themes
-
-1. Create a new JSON file in the `themes/` directory.
-2. Define the theme properties, including colors and font settings.
-3. Select the theme from the settings menu.
-
----
-
-## Troubleshooting
-
-- **Virtual Environment Issues**:
-  Ensure the virtual environment is activated before running any commands.
-
-- **Missing Dependencies**:
-  Double-check that all required packages are installed:
-  ```bash
-  pip install -r requirements.txt
-  ```
-
-- **Ollama Not Found**:
-  Ensure that Ollama is installed and the server is running:
-  ```bash
-  ollama serve
-  ```
-
-- **Startup Sound Not Playing**:
-  Ensure the `Sounds/Start.mp3` file exists and is properly formatted.
-
----
-
-## Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request for any changes or suggestions.
-
+Contributing
+Contributions welcome via issues or pull requests. Please follow existing code style and include tests when applicable.
