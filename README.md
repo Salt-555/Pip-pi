@@ -1,6 +1,6 @@
 Pip Pi - Mini Assistant
 
-Pip Pi is a lightweight Python-based AI agent application designed to run on a Raspberry Pi. It features a customizable GUI, animated ASCII faces, and theme support. The current version requires you have Ollama downloaded on your machine.
+Pip Pi is a lightweight Python-based AI agent application designed to run on a Raspberry Pi 5 or anything stronger. It features a customizable GUI, animated ASCII faces, and theme support. The current version requires you have Ollama downloaded on your machine. Gemma2 (2 billion perameter version) makes up the brans, but this is easily changed to something bigger if your system can support it. You can expect better/ more consistant results with bigger models. 
 
 ---
 
@@ -57,7 +57,8 @@ Additionally, the app requires the [Ollama](https://ollama.ai/) model server. In
 
 ## Features
 
-- **Chatbot Integration**:  Powered by a local AI model, currently managed through ollama (model swappable via                             one variable in chatbot_manager.py).
+- **Chatbot Integration**:  Powered by a local AI model, currently managed through ollama (model swappable via one variable in chatbot_manager.py).
+  
 - **Custom Themes**:        Load and apply different themes for the GUI.
   
 - **Animated Faces**:       ASCII and GIF-based animations for interactive feedback.
@@ -78,7 +79,7 @@ Additionally, the app requires the [Ollama](https://ollama.ai/) model server. In
 - `theme_manager.py`: Manages themes.
 - `system_monitor.py`: Monitors system vitals.
 - `ada_animation_manager.py`: Handles ASCII and GIF animations.
-- `chatbot_handler.py`: Manages chatbot interactions.
+- `chatbot_handler.py`: Manages chatbot interactions. (AI set up lives here)
 - `read_write_manager.py`: Handles file reading and writing operations.
 - `ASCII_Face.py`: ASCII animation frames.
 
