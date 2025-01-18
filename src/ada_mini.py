@@ -50,6 +50,7 @@ class AdaMiniApp:
         )
         self.animation_manager.animate_ascii()
 
+        settings = load_settings()
         self.system_monitor = SystemMonitor(
             root=self.gui.root,
             canvas_frame=self.gui.graph_frame,
@@ -58,6 +59,13 @@ class AdaMiniApp:
             cpu_trend_color=self.THEME["CPU_TREND_COLOR"],
             memory_trend_color=self.THEME["MEMORY_TREND_COLOR"]
         )
+        
+        show_monitor = settings.get("show_monitor", False)
+        if show_monitor:
+            self.gui.graph_frame.pack(pady=(100, 5))
+            self.system_monitor.start()
+        else:
+            self.gui.graph_frame.pack_forget()
 
         self.chatbot_handler = ChatbotHandler(
             event_manager=self.event_manager,
@@ -83,11 +91,11 @@ class AdaMiniApp:
         self.gui.update_chat_window(f"You: {message}\n", "user")
 
     def _handle_thinking_start(self, _=None):
-        self.gui.update_chat_window(f"{self.AI_NAME} is thinking...\n", "ai_name")
+        pass
 
     def _handle_response_chunk(self, chunk):
         if not hasattr(self, '_response_started'):
-            self.gui.update_chat_window(f"{self.AI_NAME}: ", "ai_name")
+            self.gui.update_chat_window(f"\n{self.AI_NAME}: ", "ai_name")
             self._response_started = True
         self.gui.update_chat_window(chunk, "ai_name")
 
@@ -120,27 +128,26 @@ class AdaMiniApp:
         self._update_component_colors()
 
     def _update_component_colors(self):
-        component_updates = {
-            'system_monitor': lambda: self.system_monitor.update_colors(
+        if hasattr(self, 'system_monitor'):
+            self.system_monitor.update_colors(
                 background_color=self.THEME["BACKGROUND_COLOR"],
                 text_color=self.THEME["TEXT_COLOR"],
                 cpu_trend_color=self.THEME["CPU_TREND_COLOR"],
                 memory_trend_color=self.THEME["MEMORY_TREND_COLOR"]
-            ),
-            'animation_manager': lambda: self.animation_manager.update_colors(
+            )
+        if hasattr(self, 'animation_manager'):
+            self.animation_manager.update_colors(
                 text_color=self.THEME["TEXT_COLOR"],
                 background_color=self.THEME["BACKGROUND_COLOR"]
             )
-        }
-        
-        for component, update_func in component_updates.items():
-            if hasattr(self, component):
-                update_func()
 
     def on_close(self):
         self._stop_model()
         self._cleanup_callbacks()
-        self.animation_manager.stop_all_animations()
+        if hasattr(self, 'animation_manager'):
+            self.animation_manager.stop_all_animations()
+        if hasattr(self, 'system_monitor'):
+            self.system_monitor.stop()
         self.gui.root.update()
         self.gui.root.after(3000, self._safe_exit)
 
@@ -159,7 +166,6 @@ class AdaMiniApp:
         self.after_ids.clear()
 
     def _safe_exit(self):
-        # Cancel all pending after callbacks
         for widget in [self.gui.root]:
             for after_id in widget.tk.call('after', 'info'):
                 try:
@@ -167,7 +173,6 @@ class AdaMiniApp:
                 except Exception:
                     pass
                     
-        # Join non-main threads
         for thread in threading.enumerate():
             if thread is not threading.main_thread():
                 try:

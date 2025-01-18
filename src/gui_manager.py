@@ -13,7 +13,17 @@ class GUIManager:
         self.settings_window = None
         self.setup_main_window()
         self.root.bind('<<ReopenSettings>>', self._reopen_settings)
+        self.input_field.bind("<Return>", self._handle_return)
+        self.input_field.bind("<Shift-Return>", self._handle_shift_return)
+
+    def _handle_return(self, event):
+        if not event.state & 0x1:  # No Shift key
+            self.app.on_submit()
+            return 'break'  # Prevents default newline
         
+    def _handle_shift_return(self, event):
+        return  # Allows default newline behavior
+          
     def setup_main_window(self):
         self.root = ctk.CTk()
         screen_width = self.root.winfo_screenwidth()
