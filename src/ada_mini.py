@@ -51,14 +51,10 @@ class AdaMiniApp:
         self.animation_manager.animate_ascii()
 
         settings = load_settings()
-        self.system_monitor = SystemMonitor(
-            root=self.gui.root,
-            canvas_frame=self.gui.graph_frame,
-            background_color=self.THEME["BACKGROUND_COLOR"],
-            text_color=self.THEME["TEXT_COLOR"],
-            cpu_trend_color=self.THEME["CPU_TREND_COLOR"],
-            memory_trend_color=self.THEME["MEMORY_TREND_COLOR"]
-        )
+        
+        # Get system monitor components from GUI
+        gui_components = self.gui.get_system_monitor_components()
+        self.system_monitor = SystemMonitor(gui_components)
         
         show_monitor = settings.get("show_monitor", False)
         if show_monitor:
