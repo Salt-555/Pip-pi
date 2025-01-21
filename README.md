@@ -1,6 +1,6 @@
-# Ada Mini AI Assistant
+# Pip-Pi AI Assistant
 
-Ada Mini is a desktop AI assistant application built with Python, featuring a customizable GUI, system monitoring capabilities, and an animated ASCII face interface. It uses the Gemma 2B model through Ollama for natural language processing and conversation.
+Pip-Pi is a desktop AI assistant application built with Python, featuring a customizable GUI, system monitoring capabilities, and an animated ASCII face interface. It uses the Gemma 2B model through Ollama for natural language processing and conversation.
 
 ## Features
 
@@ -29,8 +29,8 @@ Ada Mini is a desktop AI assistant application built with Python, featuring a cu
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/ada-mini.git
-cd ada-mini
+git clone https://github.com/yourusername/pip-pi.git
+cd pip-pi
 ```
 
 2. Install required packages:
@@ -48,7 +48,7 @@ ollama pull gemma2:2b
 To start the application:
 
 ```bash
-python ada_mini.py
+python pip_pi.py
 ```
 
 ### Key Features:
@@ -60,13 +60,13 @@ python ada_mini.py
 
 ## Project Structure
 
-- `ada_mini.py`: Main application entry point
+- `pip_pi.py`: Main application entry point
 - `gui_manager.py`: GUI implementation and management
 - `chatbot_handler.py`: AI conversation handling
 - `system_monitor.py`: System resource monitoring
 - `theme_manager.py`: Theme management and customization
 - `settings_manager.py`: User settings management
-- `ada_animation_manager.py`: ASCII face animation control
+- `animation_manager.py`: ASCII face animation control
 - `ASCII_Face.py`: ASCII face frame definitions
 
 ## Configuration
