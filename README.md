@@ -1,79 +1,123 @@
-Pip Pi - Mini Assistant
-Pip Pi is a lightweight Python-based AI agent application designed to run on a Raspberry Pi 5 or stronger hardware. It features a customizable GUI, animated ASCII faces, theme support, and system monitoring capabilities, powered by the Ollama model server running Gemma2 2B.
-Features
+# Ada Mini AI Assistant
 
-Local AI Integration: Powered by Ollama with Gemma2 2B (configurable in chatbot_handler.py)
-Real-time System Monitoring: CPU and memory usage tracking with matplotlib visualization
-Advanced Animation System: ASCII character animations and GIF support
-Theme Management: Customizable UI themes via JSON configuration
-Event-driven Architecture: Robust event management system for UI updates
-Resource Management: Efficient file I/O and settings persistence
-Sound Support: Configurable audio feedback with volume control
+Ada Mini is a desktop AI assistant application built with Python, featuring a customizable GUI, system monitoring capabilities, and an animated ASCII face interface. It uses the Gemma 2B model through Ollama for natural language processing and conversation.
 
-Setup Instructions
+## Features
 
-Clone the repository:
+- **Interactive Chat Interface**: Engage in conversations with an AI assistant powered by Gemma 2B
+- **Animated ASCII Face**: Dynamic facial expressions that react to different conversation states
+- **System Monitoring**: Real-time CPU and memory usage visualization
+- **Customizable Themes**: Multiple theme options for the user interface
+- **Settings Management**: Configurable options for volume, monitoring, and interface preferences
+- **File Management**: Built-in capability to read and manage AI-related files
+- **Sound Effects**: Audio feedback for enhanced user experience
 
-bashCopygit clone https://github.com/Salt-555/Pip-pi.git
-cd Pip-pi
+## Prerequisites
 
-Create and activate virtual environment:
+- Python 3.8+
+- Ollama with Gemma 2B model installed
+- Required Python packages:
+  - customtkinter
+  - tkinter
+  - pygame
+  - matplotlib
+  - pillow
+  - psutil
+  - requests
 
-bashCopypython3 -m venv venv
+## Installation
 
-# Linux/macOS
-source venv/bin/activate
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/ada-mini.git
+cd ada-mini
+```
 
-# Windows
-.\venv\Scripts\activate
+2. Install required packages:
+```bash
+pip install -r requirements.txt
+```
 
-Install dependencies:
+3. Ensure Ollama is installed and the Gemma 2B model is pulled:
+```bash
+ollama pull gemma2:2b
+```
 
-bashCopypip install -r requirements.txt
+## Usage
 
-Install and start Ollama:
+To start the application:
 
+```bash
+python ada_mini.py
+```
 
-Follow installation instructions at Ollama's website
-Start the server:
+### Key Features:
 
-bashCopyollama serve
-Core Components
+- **Chat**: Type messages in the input field and press Enter or click Send
+- **System Monitor**: Toggle the system monitoring graph in settings
+- **Theme Customization**: Change themes via the settings menu
+- **Volume Control**: Adjust sound effects volume in settings
 
-ada_mini.py: Main application entry point with event management
-system_monitor.py: Real-time system metrics visualization
-ada_animation_manager.py: Animation system with ASCII/GIF support
-chatbot_handler.py: Ollama integration and conversation management
-gui_manager.py: CustomTkinter-based UI with theme support
-theme_manager.py: JSON-based theme configuration system
-settings_manager.py: Persistent settings and configuration
-read_write_manager.py: File operations management
+## Project Structure
 
-Running the Application
-bashCopypython ada_mini.py
-Theme Customization
-Create new themes by adding JSON files to the themes/ directory with the following structure:
-jsonCopy{
-    "BACKGROUND_COLOR": "#hex",
-    "TEXT_COLOR": "#hex",
-    "ACCENT_COLOR": "#hex",
-    "AI_COLOR": "#hex",
-    "BUTTON_COLOR": "#hex",
-    "BUTTON_ACTIVE_COLOR": "#hex",
-    "CPU_TREND_COLOR": "#hex",
-    "MEMORY_TREND_COLOR": "#hex",
-    "BUTTON_STYLE": {
-        "font": ["font_name", size],
-        "additional_properties": "values"
-    }
-}
-Troubleshooting
+- `ada_mini.py`: Main application entry point
+- `gui_manager.py`: GUI implementation and management
+- `chatbot_handler.py`: AI conversation handling
+- `system_monitor.py`: System resource monitoring
+- `theme_manager.py`: Theme management and customization
+- `settings_manager.py`: User settings management
+- `ada_animation_manager.py`: ASCII face animation control
+- `ASCII_Face.py`: ASCII face frame definitions
 
-Environment Issues: Verify virtual environment activation
-Missing Packages: Run pip install -r requirements.txt
-Ollama Connection: Ensure Ollama server is running (ollama serve)
-Audio Issues: Check Sounds/Start.mp3 exists
-Theme Loading: Verify JSON theme files are properly formatted
+## Configuration
 
-Contributing
-Contributions welcome via issues or pull requests. Please follow existing code style and include tests when applicable.
+### Themes
+Themes are stored in JSON format in the `themes` directory. Each theme defines:
+- Background colors
+- Text colors
+- Button styles
+- Text box styles
+- Accent colors
+
+### Settings
+User settings are stored in `settings.json` and include:
+- Volume preferences
+- Monitor visibility
+- Update rate
+- Current theme
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Built using CustomTkinter for modern UI elements
+- Powered by Gemma 2B model through Ollama
+- Matplotlib for system monitoring visualization
+- Pygame for audio handling
+
+## Known Issues
+
+- Some theme changes may require application restart
+- System monitor updates may impact performance on slower systems
+
+## Future Improvements
+
+- Additional theme options
+- More customizable face animations
+- Enhanced file management capabilities
+- Expanded system monitoring features
+- Support for additional AI models
+
+---
+
+For bug reports and feature requests, please open an issue on the GitHub repository.
