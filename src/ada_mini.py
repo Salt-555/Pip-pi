@@ -150,7 +150,10 @@ class AdaMiniApp:
 
     def _stop_model(self):
         try:
-            subprocess.run(["ollama", "stop"], check=True)
+            if hasattr(self, 'chatbot_handler'):
+                model_name = self.chatbot_handler.model_name
+                subprocess.run(["ollama", "stop", model_name], check=True)
+                print(f"Stopped model: {model_name}")
         except Exception as e:
             print(f"Error stopping model: {e}")
 
