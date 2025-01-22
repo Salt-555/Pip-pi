@@ -73,6 +73,14 @@ class ChatbotHandler:
             settings["personality"] = personality_name
             save_settings(settings)
             self.conversation_history.clear()
+            
+            if personality_name == "analytical":
+                self.animation_manager.set_face_state("ANALYSIS")
+                threading.Timer(4.0, lambda: self.animation_manager.set_face_state("IDLE")).start()
+            elif personality_name == "conversational":
+                self.animation_manager.set_face_state("CHATTING")
+                threading.Timer(4.0, lambda: self.animation_manager.set_face_state("IDLE")).start()
+            
             return True
         return False
 

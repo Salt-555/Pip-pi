@@ -102,7 +102,7 @@ class GUIManager:
         self.animation_canvas = tk.Canvas(
             self.face_label_frame,
             width=200,
-            height=200,
+            height=300,
             bg=self.THEME["BACKGROUND_COLOR"],
             highlightthickness=0
         )
