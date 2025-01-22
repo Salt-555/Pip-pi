@@ -44,11 +44,9 @@ class AdaMiniApp:
     def _initialize_components(self):
         self.animation_manager = AnimationGifHandler(
             root=self.gui.root,
-            canvas_frame=self.gui.face_label_frame,
-            text_color=self.THEME["TEXT_COLOR"],
-            background_color=self.THEME["BACKGROUND_COLOR"]
+            canvas=self.gui.animation_canvas,
+            theme_data=self.THEME
         )
-        self.animation_manager.animate_ascii()
 
         settings = load_settings()
         gui_components = self.gui.get_system_monitor_components()
@@ -131,10 +129,7 @@ class AdaMiniApp:
             }
             self.system_monitor.update_colors(new_colors)
         if hasattr(self, 'animation_manager'):
-            self.animation_manager.update_colors(
-                text_color=self.THEME["TEXT_COLOR"],
-                background_color=self.THEME["BACKGROUND_COLOR"]
-            )
+            self.animation_manager.update_colors(self.THEME)
 
     def on_close(self):
         self._stop_model()
@@ -150,10 +145,7 @@ class AdaMiniApp:
 
     def _stop_model(self):
         try:
-            if hasattr(self, 'chatbot_handler'):
-                model_name = self.chatbot_handler.model_name
-                subprocess.run(["ollama", "stop", model_name], check=True)
-                print(f"Stopped model: {model_name}")
+            subprocess.run(["ollama", "stop"], check=True)
         except Exception as e:
             print(f"Error stopping model: {e}")
 

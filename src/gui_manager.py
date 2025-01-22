@@ -79,11 +79,6 @@ class GUIManager:
         )
         self.personality_dropdown.grid(row=0, column=0, padx=10, pady=5, sticky="w")
 
-    def _on_personality_select(self, personality_name):
-        if hasattr(self.app, 'chatbot_handler'):
-            self.app.chatbot_handler.switch_personality(personality_name)
-            self.clear_chat_window()
-
     def create_chat_window(self):
         self.chat_window = ctk.CTkTextbox(
             master=self.main_frame,
@@ -102,7 +97,18 @@ class GUIManager:
             fg_color=self.THEME["BACKGROUND_COLOR"]
         )
         self.face_label_frame.grid(row=0, column=1, rowspan=2, padx=10, pady=10, sticky="n")
+        
+        # Create animation canvas with fixed initial size
+        self.animation_canvas = tk.Canvas(
+            self.face_label_frame,
+            width=200,
+            height=200,
+            bg=self.THEME["BACKGROUND_COLOR"],
+            highlightthickness=0
+        )
+        self.animation_canvas.pack(padx=5, pady=5)
 
+        # System monitor frame and canvas
         self.graph_frame = ctk.CTkFrame(
             self.face_label_frame,
             corner_radius=12,
@@ -126,6 +132,54 @@ class GUIManager:
         self.system_monitor_canvas_widget.pack(expand=True, fill="both", padx=5, pady=5)
         
         self._style_system_monitor_plot()
+
+    def create_input_area(self):
+        self.bottom_frame = ctk.CTkFrame(
+            self.main_frame,
+            corner_radius=12,
+            fg_color=self.THEME["BACKGROUND_COLOR"]
+        )
+        self.bottom_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
+        self.bottom_frame.columnconfigure(0, weight=1)
+        self.bottom_frame.columnconfigure(1, weight=0)
+        self.bottom_frame.columnconfigure(2, weight=0)
+        self.bottom_frame.columnconfigure(3, weight=0)
+
+        self.input_field = ctk.CTkTextbox(
+            master=self.bottom_frame,
+            **self.INPUT_TEXTBOX_STYLE,
+            height=50
+        )
+        self.input_field.grid(row=0, column=0, padx=(0, 10), sticky="ew")
+        self.input_field.bind("<KeyRelease>", self.update_input_height)
+
+        self.send_button = ctk.CTkButton(
+            master=self.bottom_frame,
+            text="Send",
+            **self.BUTTON_STYLE,
+            command=self.app.on_submit
+        )
+        self.send_button.grid(row=0, column=1, sticky="ew")
+
+        self.settings_button = ctk.CTkButton(
+            master=self.bottom_frame,
+            text="Settings",
+            **self.BUTTON_STYLE,
+            command=self.open_settings_menu
+        )
+        self.settings_button.grid(row=0, column=3, padx=(10, 0), sticky="ew")
+
+    def _on_personality_select(self, personality_name):
+        if hasattr(self.app, 'chatbot_handler'):
+            self.app.chatbot_handler.switch_personality(personality_name)
+            self.clear_chat_window()
+
+    def update_input_height(self, event=None):
+        line_count_str = self.input_field.index("end-1c")
+        line_count = int(line_count_str.split(".")[0])
+        line_count = max(1, min(line_count, 3))
+        new_height = 50 + (line_count - 1) * 30
+        self.input_field.configure(height=new_height)
 
     def _style_system_monitor_plot(self):
         for spine in self.system_monitor_ax.spines.values():
@@ -172,49 +226,6 @@ class GUIManager:
             top=0.85
         )
 
-    def create_input_area(self):
-        self.bottom_frame = ctk.CTkFrame(
-            self.main_frame,
-            corner_radius=12,
-            fg_color=self.THEME["BACKGROUND_COLOR"]
-        )
-        self.bottom_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
-        self.bottom_frame.columnconfigure(0, weight=1)
-        self.bottom_frame.columnconfigure(1, weight=0)
-        self.bottom_frame.columnconfigure(2, weight=0)
-        self.bottom_frame.columnconfigure(3, weight=0)
-
-        self.input_field = ctk.CTkTextbox(
-            master=self.bottom_frame,
-            **self.INPUT_TEXTBOX_STYLE,
-            height=50
-        )
-        self.input_field.grid(row=0, column=0, padx=(0, 10), sticky="ew")
-        self.input_field.bind("<KeyRelease>", self.update_input_height)
-
-        self.send_button = ctk.CTkButton(
-            master=self.bottom_frame,
-            text="Send",
-            **self.BUTTON_STYLE,
-            command=self.app.on_submit
-        )
-        self.send_button.grid(row=0, column=1, sticky="ew")
-
-        self.settings_button = ctk.CTkButton(
-            master=self.bottom_frame,
-            text="Settings",
-            **self.BUTTON_STYLE,
-            command=self.open_settings_menu
-        )
-        self.settings_button.grid(row=0, column=3, padx=(10, 0), sticky="ew")
-
-    def update_input_height(self, event=None):
-        line_count_str = self.input_field.index("end-1c")
-        line_count = int(line_count_str.split(".")[0])
-        line_count = max(1, min(line_count, 3))
-        new_height = 50 + (line_count - 1) * 30
-        self.input_field.configure(height=new_height)
-
     def get_system_monitor_components(self):
         return {
             "canvas": self.system_monitor_canvas,
@@ -256,8 +267,11 @@ class GUIManager:
         self.chat_window.configure(**self.TEXTBOX_STYLE)
         self.chat_window.tag_config("user", foreground=self.THEME["ACCENT_COLOR"])
         self.chat_window.tag_config("ai_name", foreground=self.THEME["AI_COLOR"])
+        
         self.face_label_frame.configure(fg_color=self.THEME["BACKGROUND_COLOR"])
+        self.animation_canvas.configure(bg=self.THEME["BACKGROUND_COLOR"])
         self.graph_frame.configure(fg_color=self.THEME["BACKGROUND_COLOR"])
+        
         self.bottom_frame.configure(fg_color=self.THEME["BACKGROUND_COLOR"])
         self.input_field.configure(**self.INPUT_TEXTBOX_STYLE)
         self.send_button.configure(**self.BUTTON_STYLE)
