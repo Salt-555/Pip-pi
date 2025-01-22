@@ -1,6 +1,6 @@
 # Pip-Pi AI Assistant
 
-Pip-Pi is a desktop AI assistant application built with Python, featuring a customizable GUI, system monitoring capabilities, and an animated ASCII face interface. It uses the Gemma 2B model through Ollama for natural language processing and conversation.
+Pip-Pi is a desktop AI assistant application built with Python, featuring a customizable GUI, system monitoring capabilities, and an animated ASCII face interface. It uses the Gemma2:2B model and the deepseek-r1:7b model through Ollama for natural language processing and conversation.
 
 ## Features
 
@@ -15,7 +15,7 @@ Pip-Pi is a desktop AI assistant application built with Python, featuring a cust
 ## Prerequisites
 
 - Python 3.8+
-- Ollama with Gemma 2B model installed
+- Ollama with Gemma2:2B and deepseek-r1:7b model installed
 - Required Python packages:
   - customtkinter
   - tkinter
