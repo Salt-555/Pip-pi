@@ -3,6 +3,7 @@ import customtkinter as ctk
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from settings_menu import SettingsMenu
+from settings_manager import load_settings
 
 class GUIManager:
     def __init__(self, app_instance, theme_data):
@@ -18,12 +19,12 @@ class GUIManager:
         self.input_field.bind("<Shift-Return>", self._handle_shift_return)
 
     def _handle_return(self, event):
-        if not event.state & 0x1:  # No Shift key
+        if not event.state & 0x1:
             self.app.on_submit()
-            return 'break'  # Prevents default newline
+            return 'break'
         
     def _handle_shift_return(self, event):
-        return  # Allows default newline behavior
+        return
 
     def setup_main_window(self):
         self.root = ctk.CTk()
@@ -36,6 +37,7 @@ class GUIManager:
         self.root.geometry(f"{window_width}x{window_height}+{center_x}+{center_y}")
         
         self.create_main_frame()
+        self.create_personality_selector()
         self.create_chat_window()
         self.create_face_frame()
         self.create_input_area()
@@ -49,10 +51,38 @@ class GUIManager:
             self.root, corner_radius=12, fg_color=self.THEME["BACKGROUND_COLOR"]
         )
         self.main_frame.grid(row=0, column=0, sticky="nsew")
-        self.main_frame.rowconfigure(0, weight=1)
-        self.main_frame.rowconfigure(1, weight=0)
+        self.main_frame.rowconfigure(0, weight=0)
+        self.main_frame.rowconfigure(1, weight=1)
+        self.main_frame.rowconfigure(2, weight=0)
         self.main_frame.columnconfigure(0, weight=3)
         self.main_frame.columnconfigure(1, weight=0)
+
+    def create_personality_selector(self):
+        settings = load_settings()
+        personalities = ["conversational", "analytical"]
+        current_personality = settings.get("personality", "conversational")
+        
+        self.personality_var = ctk.StringVar(value=current_personality)
+        self.personality_dropdown = ctk.CTkOptionMenu(
+            self.main_frame,
+            variable=self.personality_var,
+            values=personalities,
+            command=self._on_personality_select,
+            fg_color=self.THEME["BUTTON_COLOR"],
+            button_color=self.THEME["BUTTON_COLOR"],
+            button_hover_color=self.THEME["BUTTON_ACTIVE_COLOR"],
+            dropdown_fg_color=self.THEME["BACKGROUND_COLOR"],
+            dropdown_hover_color=self.THEME["BUTTON_ACTIVE_COLOR"],
+            text_color=self.THEME["TEXT_COLOR"],
+            dropdown_text_color=self.THEME["TEXT_COLOR"],
+            font=self.THEME["BUTTON_STYLE"]["font"]
+        )
+        self.personality_dropdown.grid(row=0, column=0, padx=10, pady=5, sticky="w")
+
+    def _on_personality_select(self, personality_name):
+        if hasattr(self.app, 'chatbot_handler'):
+            self.app.chatbot_handler.switch_personality(personality_name)
+            self.clear_chat_window()
 
     def create_chat_window(self):
         self.chat_window = ctk.CTkTextbox(
@@ -60,7 +90,7 @@ class GUIManager:
             **self.TEXTBOX_STYLE,
             state="disabled"
         )
-        self.chat_window.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+        self.chat_window.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
         self.chat_window.tag_config("user", foreground=self.THEME["ACCENT_COLOR"])
         self.chat_window.tag_config("ai_name", foreground=self.THEME["AI_COLOR"])
         self.chat_window.tag_config("error", foreground="red")
@@ -71,87 +101,76 @@ class GUIManager:
             corner_radius=12,
             fg_color=self.THEME["BACKGROUND_COLOR"]
         )
-        self.face_label_frame.grid(row=0, column=1, padx=10, pady=10, sticky="n")
+        self.face_label_frame.grid(row=0, column=1, rowspan=2, padx=10, pady=10, sticky="n")
 
-        # Create the graph frame with system monitor components
         self.graph_frame = ctk.CTkFrame(
             self.face_label_frame,
             corner_radius=12,
             fg_color=self.THEME["BACKGROUND_COLOR"],
-            width=300,
-            height=150
+            width=250,
+            height=120
         )
         self.graph_frame.pack(pady=(100, 5))
         
-        # Initialize the matplotlib figure and canvas
-        self.system_monitor_fig = Figure(figsize=(3.75, 1.5), dpi=100)
+        self.system_monitor_fig = Figure(figsize=(3.0, 1.2), dpi=100)
         self.system_monitor_ax = self.system_monitor_fig.add_subplot(111)
         
-        # Style the plot
         self.system_monitor_ax.set_facecolor(self.THEME["BACKGROUND_COLOR"])
         self.system_monitor_fig.patch.set_facecolor(self.THEME["BACKGROUND_COLOR"])
         
-        # Create the canvas and pack it
         self.system_monitor_canvas = FigureCanvasTkAgg(
             self.system_monitor_fig, 
             master=self.graph_frame
         )
         self.system_monitor_canvas_widget = self.system_monitor_canvas.get_tk_widget()
-        self.system_monitor_canvas_widget.pack(expand=True, fill="both")
+        self.system_monitor_canvas_widget.pack(expand=True, fill="both", padx=5, pady=5)
         
-        # Initial styling of the plot
         self._style_system_monitor_plot()
 
     def _style_system_monitor_plot(self):
-        """Apply consistent styling to the system monitor plot."""
-        self.system_monitor_ax.spines['top'].set_color(self.THEME["TEXT_COLOR"])
-        self.system_monitor_ax.spines['bottom'].set_color(self.THEME["TEXT_COLOR"])
-        self.system_monitor_ax.spines['left'].set_color(self.THEME["TEXT_COLOR"])
-        self.system_monitor_ax.spines['right'].set_color(self.THEME["TEXT_COLOR"])
-        self.system_monitor_ax.tick_params(colors=self.THEME["TEXT_COLOR"], labelsize=8)
+        for spine in self.system_monitor_ax.spines.values():
+            spine.set_color(self.THEME["TEXT_COLOR"])
+            spine.set_linewidth(0.8)
 
-        self.system_monitor_ax.set_ylim(0, 100)  # Y-axis range: 0 to 100%
+        self.system_monitor_ax.spines['top'].set_visible(False)
+        self.system_monitor_ax.spines['right'].set_visible(False)
+        
+        self.system_monitor_ax.tick_params(
+            axis='both',
+            colors=self.THEME["TEXT_COLOR"],
+            labelsize=6,
+            width=0.8,
+            length=3,
+            direction='out'
+        )
+
+        self.system_monitor_ax.set_ylim(0, 100)
         self.system_monitor_ax.set_ylabel(
             "Usage (%)", 
             color=self.THEME["TEXT_COLOR"], 
-            fontsize=8
+            fontsize=6,
+            labelpad=2
         )
         self.system_monitor_ax.set_xlabel(
             "Time",
             color=self.THEME["TEXT_COLOR"],
-            fontsize=8
+            fontsize=6,
+            labelpad=2
         )
         self.system_monitor_ax.set_title(
             "System Monitor",
-            fontsize=10,
+            fontsize=8,
             fontweight="bold",
-            color=self.THEME["TEXT_COLOR"]
+            color=self.THEME["TEXT_COLOR"],
+            pad=2
         )
-        self.system_monitor_fig.subplots_adjust(left=0.2, bottom=0.3)
-        
-        # Ensure legend is properly styled
-        # Legend will be added by SystemMonitor when data is available
 
-    def get_system_monitor_components(self):
-        """Return the system monitor components for use by the SystemMonitor class."""
-        return {
-            "canvas": self.system_monitor_canvas,
-            "figure": self.system_monitor_fig,
-            "ax": self.system_monitor_ax,
-            "colors": {
-                "background": self.THEME["BACKGROUND_COLOR"],
-                "text": self.THEME["TEXT_COLOR"],
-                "cpu": self.THEME["CPU_TREND_COLOR"],
-                "memory": self.THEME["MEMORY_TREND_COLOR"]
-            }
-        }
-
-    def update_system_monitor_colors(self, theme_data):
-        """Update the system monitor plot colors when theme changes."""
-        self.system_monitor_ax.set_facecolor(theme_data["BACKGROUND_COLOR"])
-        self.system_monitor_fig.patch.set_facecolor(theme_data["BACKGROUND_COLOR"])
-        self._style_system_monitor_plot()
-        self.system_monitor_canvas.draw()
+        self.system_monitor_fig.subplots_adjust(
+            left=0.15,
+            right=0.95,
+            bottom=0.25,
+            top=0.85
+        )
 
     def create_input_area(self):
         self.bottom_frame = ctk.CTkFrame(
@@ -159,7 +178,7 @@ class GUIManager:
             corner_radius=12,
             fg_color=self.THEME["BACKGROUND_COLOR"]
         )
-        self.bottom_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
+        self.bottom_frame.grid(row=2, column=0, columnspan=2, padx=10, pady=10, sticky="ew")
         self.bottom_frame.columnconfigure(0, weight=1)
         self.bottom_frame.columnconfigure(1, weight=0)
         self.bottom_frame.columnconfigure(2, weight=0)
@@ -196,6 +215,25 @@ class GUIManager:
         new_height = 50 + (line_count - 1) * 30
         self.input_field.configure(height=new_height)
 
+    def get_system_monitor_components(self):
+        return {
+            "canvas": self.system_monitor_canvas,
+            "figure": self.system_monitor_fig,
+            "ax": self.system_monitor_ax,
+            "colors": {
+                "background": self.THEME["BACKGROUND_COLOR"],
+                "text": self.THEME["TEXT_COLOR"],
+                "cpu": self.THEME["CPU_TREND_COLOR"],
+                "memory": self.THEME["MEMORY_TREND_COLOR"]
+            }
+        }
+
+    def update_system_monitor_colors(self, theme_data):
+        self.system_monitor_ax.set_facecolor(theme_data["BACKGROUND_COLOR"])
+        self.system_monitor_fig.patch.set_facecolor(theme_data["BACKGROUND_COLOR"])
+        self._style_system_monitor_plot()
+        self.system_monitor_canvas.draw()
+
     def apply_theme_to_gui(self, theme_data):
         self.THEME = theme_data
         self.BUTTON_STYLE = self.THEME["BUTTON_STYLE"]
@@ -204,6 +242,17 @@ class GUIManager:
 
         self.root.configure(fg_color=self.THEME["BACKGROUND_COLOR"])
         self.main_frame.configure(fg_color=self.THEME["BACKGROUND_COLOR"])
+        
+        self.personality_dropdown.configure(
+            fg_color=self.THEME["BUTTON_COLOR"],
+            button_color=self.THEME["BUTTON_COLOR"],
+            button_hover_color=self.THEME["BUTTON_ACTIVE_COLOR"],
+            dropdown_fg_color=self.THEME["BACKGROUND_COLOR"],
+            dropdown_hover_color=self.THEME["BUTTON_ACTIVE_COLOR"],
+            text_color=self.THEME["TEXT_COLOR"],
+            dropdown_text_color=self.THEME["TEXT_COLOR"]
+        )
+        
         self.chat_window.configure(**self.TEXTBOX_STYLE)
         self.chat_window.tag_config("user", foreground=self.THEME["ACCENT_COLOR"])
         self.chat_window.tag_config("ai_name", foreground=self.THEME["AI_COLOR"])
@@ -214,7 +263,6 @@ class GUIManager:
         self.send_button.configure(**self.BUTTON_STYLE)
         self.settings_button.configure(**self.BUTTON_STYLE)
         
-        # Update system monitor colors
         self.update_system_monitor_colors(theme_data)
 
     def get_user_input(self):
@@ -224,14 +272,22 @@ class GUIManager:
         self.input_field.delete("1.0", "end")
         self.input_field.configure(height=50)
 
+    def clear_chat_window(self):
+        self.chat_window.configure(state="normal")
+        self.chat_window.delete("1.0", "end")
+        self.chat_window.configure(state="disabled")
+
     def update_chat_window(self, message, tag=None):
         self.chat_window.configure(state="normal")
         self.chat_window.insert("end", message, tag if tag else "")
         self.chat_window.configure(state="disabled")
         self.chat_window.see("end")
 
-    def _reopen_settings(self, event=None):
-        if hasattr(self, 'settings_button'):
+    def open_settings_menu(self):
+        if self.settings_window is not None and self.settings_window.winfo_exists():
+            self.settings_window.lift()
+            self.settings_window.focus_force()
+        else:
             self.settings_window = SettingsMenu(
                 self.root,
                 button_widget=self.settings_button,
@@ -241,11 +297,8 @@ class GUIManager:
                 app=self.app
             )
 
-    def open_settings_menu(self):
-        if self.settings_window is not None and self.settings_window.winfo_exists():
-            self.settings_window.lift()
-            self.settings_window.focus_force()
-        else:
+    def _reopen_settings(self, event=None):
+        if hasattr(self, 'settings_button'):
             self.settings_window = SettingsMenu(
                 self.root,
                 button_widget=self.settings_button,

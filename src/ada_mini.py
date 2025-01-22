@@ -51,8 +51,6 @@ class AdaMiniApp:
         self.animation_manager.animate_ascii()
 
         settings = load_settings()
-        
-        # Get system monitor components from GUI
         gui_components = self.gui.get_system_monitor_components()
         self.system_monitor = SystemMonitor(gui_components)
         
@@ -93,10 +91,10 @@ class AdaMiniApp:
         if not hasattr(self, '_response_started'):
             self.gui.update_chat_window(f"\n{self.AI_NAME}: ", "ai_name")
             self._response_started = True
-        self.gui.update_chat_window(chunk, "ai_name")
+        self.gui.update_chat_window(chunk)
 
     def _handle_response_complete(self, _=None):
-        self.gui.update_chat_window("\n", "ai_name")
+        self.gui.update_chat_window("\n\n")
         delattr(self, '_response_started')
 
     def play_startup_sound(self):
@@ -125,12 +123,13 @@ class AdaMiniApp:
 
     def _update_component_colors(self):
         if hasattr(self, 'system_monitor'):
-            self.system_monitor.update_colors(
-                background_color=self.THEME["BACKGROUND_COLOR"],
-                text_color=self.THEME["TEXT_COLOR"],
-                cpu_trend_color=self.THEME["CPU_TREND_COLOR"],
-                memory_trend_color=self.THEME["MEMORY_TREND_COLOR"]
-            )
+            new_colors = {
+                "background": self.THEME["BACKGROUND_COLOR"],
+                "text": self.THEME["TEXT_COLOR"],
+                "cpu": self.THEME["CPU_TREND_COLOR"],
+                "memory": self.THEME["MEMORY_TREND_COLOR"]
+            }
+            self.system_monitor.update_colors(new_colors)
         if hasattr(self, 'animation_manager'):
             self.animation_manager.update_colors(
                 text_color=self.THEME["TEXT_COLOR"],
@@ -145,11 +144,13 @@ class AdaMiniApp:
         if hasattr(self, 'system_monitor'):
             self.system_monitor.stop()
         self.gui.root.update()
-        self.gui.root.after(3000, self._safe_exit)
+        self.gui.root.quit()
+        self.gui.root.destroy()
+        sys.exit(0)
 
     def _stop_model(self):
         try:
-            subprocess.run(["ollama", "stop", "gemma2:2b"], check=True)
+            subprocess.run(["ollama", "stop"], check=True)
         except Exception as e:
             print(f"Error stopping model: {e}")
 
@@ -160,30 +161,6 @@ class AdaMiniApp:
             except Exception:
                 pass
         self.after_ids.clear()
-
-    def _safe_exit(self):
-        for widget in [self.gui.root]:
-            for after_id in widget.tk.call('after', 'info'):
-                try:
-                    widget.after_cancel(after_id)
-                except Exception:
-                    pass
-                    
-        for thread in threading.enumerate():
-            if thread is not threading.main_thread():
-                try:
-                    thread.join(timeout=1)
-                except Exception:
-                    pass
-
-        try:
-            self.gui.root.quit()
-            self.gui.root.destroy()
-        except Exception:
-            pass
-            
-        import os
-        os._exit(0)
 
     def run(self):
         self.animation_manager.set_face_state("WELCOME")
