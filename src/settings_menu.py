@@ -6,10 +6,6 @@ class SettingsMenu(ctk.CTkToplevel):
     def __init__(self, master, button_widget=None, theme_manager=None, on_theme_change=None, current_theme=None, app=None):
         super().__init__(master)
         self.title("Settings")
-        self.geometry("400x500")
-        self.resizable(False, False)
-        self.configure(fg_color=current_theme["BACKGROUND_COLOR"])
-
         self.theme_manager = theme_manager or ThemeManager()
         self.on_theme_change = on_theme_change
         self.current_theme = current_theme
@@ -22,10 +18,41 @@ class SettingsMenu(ctk.CTkToplevel):
 
         self._create_ui()
         self._setup_bindings()
+        self._position_window()
         self.lift()
         self.focus_force()
 
+    def _position_window(self):
+        window_width = 400
+        window_height = 500
+        
+        if self.button_widget:
+            button_x = self.button_widget.winfo_rootx()
+            button_y = self.button_widget.winfo_rooty()
+            screen_height = self.winfo_screenheight()
+            
+            # Position above or below button based on space
+            if button_y - window_height - 5 < 0:
+                y_position = button_y + self.button_widget.winfo_height() + 5
+            else:
+                y_position = button_y - window_height - 5
+                
+            # Ensure window stays within screen bounds
+            screen_width = self.winfo_screenwidth()
+            x_position = min(max(button_x, 0), screen_width - window_width)
+        else:
+            # Center on screen if no button reference
+            screen_width = self.winfo_screenwidth()
+            screen_height = self.winfo_screenheight()
+            x_position = (screen_width - window_width) // 2
+            y_position = (screen_height - window_height) // 2
+            
+        self.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
+        self.resizable(False, False)
+
     def _create_ui(self):
+        self.configure(fg_color=self.current_theme["BACKGROUND_COLOR"])
+        
         self.border_frame = ctk.CTkFrame(
             self, 
             fg_color=self.current_theme["ACCENT_COLOR"],
@@ -44,9 +71,6 @@ class SettingsMenu(ctk.CTkToplevel):
         self._create_monitor_section()
         self._create_theme_section()
         self._create_about_section()
-
-        if self.button_widget:
-            self.position_above_button(self.button_widget)
 
     def _create_section_header(self, parent, text):
         return ctk.CTkLabel(
@@ -197,23 +221,6 @@ class SettingsMenu(ctk.CTkToplevel):
     def _setup_bindings(self):
         self.bind("<FocusOut>", self._close_on_focus_out)
         self.protocol("WM_DELETE_WINDOW", self.destroy)
-
-    def position_above_button(self, button_widget):
-        button_x = button_widget.winfo_rootx()
-        button_y = button_widget.winfo_rooty()
-        window_height = 500
-        screen_height = self.winfo_screenheight()
-        
-        if button_y - window_height - 5 < 0:
-            y_position = button_y + button_widget.winfo_height() + 5
-        else:
-            y_position = button_y - window_height - 5
-            
-        window_width = 400
-        screen_width = self.winfo_screenwidth()
-        x_position = min(max(button_x, 0), screen_width - window_width)
-        
-        self.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
 
     def _close_on_focus_out(self, event):
         if event.widget not in (self, self.theme_dropdown, self.theme_dropdown._dropdown_menu):

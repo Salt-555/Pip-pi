@@ -98,7 +98,6 @@ class GUIManager:
         )
         self.face_label_frame.grid(row=0, column=1, rowspan=2, padx=10, pady=10, sticky="n")
         
-        # Create animation canvas with fixed initial size
         self.animation_canvas = tk.Canvas(
             self.face_label_frame,
             width=200,
@@ -108,7 +107,6 @@ class GUIManager:
         )
         self.animation_canvas.pack(padx=5, pady=5)
 
-        # System monitor frame and canvas
         self.graph_frame = ctk.CTkFrame(
             self.face_label_frame,
             corner_radius=12,
@@ -121,17 +119,12 @@ class GUIManager:
         self.system_monitor_fig = Figure(figsize=(3.0, 1.2), dpi=100)
         self.system_monitor_ax = self.system_monitor_fig.add_subplot(111)
         
-        self.system_monitor_ax.set_facecolor(self.THEME["BACKGROUND_COLOR"])
-        self.system_monitor_fig.patch.set_facecolor(self.THEME["BACKGROUND_COLOR"])
-        
         self.system_monitor_canvas = FigureCanvasTkAgg(
             self.system_monitor_fig, 
             master=self.graph_frame
         )
         self.system_monitor_canvas_widget = self.system_monitor_canvas.get_tk_widget()
         self.system_monitor_canvas_widget.pack(expand=True, fill="both", padx=5, pady=5)
-        
-        self._style_system_monitor_plot()
 
     def create_input_area(self):
         self.bottom_frame = ctk.CTkFrame(
@@ -181,51 +174,6 @@ class GUIManager:
         new_height = 50 + (line_count - 1) * 30
         self.input_field.configure(height=new_height)
 
-    def _style_system_monitor_plot(self):
-        for spine in self.system_monitor_ax.spines.values():
-            spine.set_color(self.THEME["TEXT_COLOR"])
-            spine.set_linewidth(0.8)
-
-        self.system_monitor_ax.spines['top'].set_visible(False)
-        self.system_monitor_ax.spines['right'].set_visible(False)
-        
-        self.system_monitor_ax.tick_params(
-            axis='both',
-            colors=self.THEME["TEXT_COLOR"],
-            labelsize=6,
-            width=0.8,
-            length=3,
-            direction='out'
-        )
-
-        self.system_monitor_ax.set_ylim(0, 100)
-        self.system_monitor_ax.set_ylabel(
-            "Usage (%)", 
-            color=self.THEME["TEXT_COLOR"], 
-            fontsize=6,
-            labelpad=2
-        )
-        self.system_monitor_ax.set_xlabel(
-            "Time",
-            color=self.THEME["TEXT_COLOR"],
-            fontsize=6,
-            labelpad=2
-        )
-        self.system_monitor_ax.set_title(
-            "System Monitor",
-            fontsize=8,
-            fontweight="bold",
-            color=self.THEME["TEXT_COLOR"],
-            pad=2
-        )
-
-        self.system_monitor_fig.subplots_adjust(
-            left=0.15,
-            right=0.95,
-            bottom=0.25,
-            top=0.85
-        )
-
     def get_system_monitor_components(self):
         return {
             "canvas": self.system_monitor_canvas,
@@ -242,7 +190,6 @@ class GUIManager:
     def update_system_monitor_colors(self, theme_data):
         self.system_monitor_ax.set_facecolor(theme_data["BACKGROUND_COLOR"])
         self.system_monitor_fig.patch.set_facecolor(theme_data["BACKGROUND_COLOR"])
-        self._style_system_monitor_plot()
         self.system_monitor_canvas.draw()
 
     def apply_theme_to_gui(self, theme_data):
@@ -271,8 +218,8 @@ class GUIManager:
         self.face_label_frame.configure(fg_color=self.THEME["BACKGROUND_COLOR"])
         self.animation_canvas.configure(bg=self.THEME["BACKGROUND_COLOR"])
         self.graph_frame.configure(fg_color=self.THEME["BACKGROUND_COLOR"])
-        
         self.bottom_frame.configure(fg_color=self.THEME["BACKGROUND_COLOR"])
+        
         self.input_field.configure(**self.INPUT_TEXTBOX_STYLE)
         self.send_button.configure(**self.BUTTON_STYLE)
         self.settings_button.configure(**self.BUTTON_STYLE)
@@ -298,7 +245,7 @@ class GUIManager:
         self.chat_window.see("end")
 
     def open_settings_menu(self):
-        if self.settings_window is not None and self.settings_window.winfo_exists():
+        if self.settings_window and self.settings_window.winfo_exists():
             self.settings_window.lift()
             self.settings_window.focus_force()
         else:
