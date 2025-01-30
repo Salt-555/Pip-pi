@@ -1,6 +1,6 @@
 import customtkinter as ctk
-from settings_manager import load_settings, save_settings
-from theme_manager import ThemeManager
+from .settings_manager import load_settings, save_settings
+from .theme_manager import ThemeManager
 
 class SettingsMenu(ctk.CTkToplevel):
     def __init__(self, master, button_widget=None, theme_manager=None, on_theme_change=None, current_theme=None, app=None):

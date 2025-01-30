@@ -1,2 +1,0 @@
-HEY! Lovelace, congradulations on successfully reading a text file from within the systems file system. 
-you are one step closer to becoming a fully fledged agent. 

@@ -2,8 +2,8 @@ import tkinter as tk
 import customtkinter as ctk
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from settings_menu import SettingsMenu
-from settings_manager import load_settings
+from .settings_menu import SettingsMenu
+from .settings_manager import load_settings
 
 class GUIManager:
     def __init__(self, app_instance, theme_data):

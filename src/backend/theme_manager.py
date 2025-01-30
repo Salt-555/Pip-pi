@@ -3,7 +3,7 @@ from pathlib import Path
 
 class ThemeManager:
     def __init__(self):
-        self.themes_dir = Path(__file__).parent / "themes"
+        self.themes_dir = Path(__file__).parent.parent / "themes"  # Updated path
         self.current_theme = None
         self._available_themes = self._load_available_themes()
         

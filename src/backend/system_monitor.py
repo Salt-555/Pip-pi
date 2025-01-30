@@ -1,6 +1,6 @@
 from collections import deque
 import psutil
-from settings_manager import load_settings
+from .settings_manager import load_settings
 
 class SystemMonitor:
     def __init__(self, gui_components):

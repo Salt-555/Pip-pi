@@ -4,8 +4,8 @@ import threading
 import subprocess
 from collections import deque
 from pathlib import Path
-from ada_animation_manager import AnimationGifHandler
-from settings_manager import load_settings, save_settings
+from .animation_manager import AnimationGifHandler
+from .settings_manager import load_settings, save_settings
 
 OLLAMA_API_BASE = "http://localhost:11434/api"
 DEFAULT_PERSONALITY = "conversational"
@@ -14,7 +14,7 @@ class ChatbotHandler:
     def __init__(self, event_manager, animation_manager: AnimationGifHandler):
         self.event_manager = event_manager
         self.animation_manager = animation_manager
-        self.personalities_path = Path(__file__).parent / "personalities/ai_config.json"
+        self.personalities_path = Path(__file__).parent.parent / "personalities/ai_config.json"
         self.personalities = self._load_personalities()
         
         settings = load_settings()

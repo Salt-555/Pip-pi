@@ -1,7 +1,7 @@
 import os
 import tkinter as tk
 from PIL import Image, ImageTk
-from ASCII_Face import FRAMES_BY_STATE
+from .ASCII_Face import FRAMES_BY_STATE
 import time
 
 class ResponsiveAnimationHandler:

@@ -3,12 +3,21 @@ import threading
 import subprocess
 from pathlib import Path
 from pygame import mixer
-from settings_manager import load_settings
-from system_monitor import SystemMonitor
-from ada_animation_manager import AnimationGifHandler
-from theme_manager import ThemeManager
-from chatbot_handler import ChatbotHandler
-from gui_manager import GUIManager
+
+from backend import (
+    AnimationGifHandler,
+    SystemMonitor,
+    ThemeManager,
+    ChatbotHandler,
+    GUIManager,
+    load_settings
+)
+
+# Define base paths
+BASE_DIR = Path(__file__).parent
+PERSONALITIES_DIR = BASE_DIR / "personalities"
+SOUNDS_DIR = BASE_DIR / "sounds"
+THEMES_DIR = BASE_DIR / "themes"
 
 class EventManager:
     def __init__(self):
@@ -24,7 +33,7 @@ class EventManager:
             for handler in self.subscribers[event_type]:
                 handler(data)
 
-class AdaMiniApp:
+class MainApp:
     def __init__(self):
         self.after_ids = {}
         self.event_manager = EventManager()
@@ -99,7 +108,7 @@ class AdaMiniApp:
         try:
             settings = load_settings()
             volume = settings.get("global_volume", 75) / 100
-            sound_path = Path(__file__).parent / "Sounds/Start.mp3"
+            sound_path = SOUNDS_DIR / "Start.mp3"
             if sound_path.exists():
                 mixer.init()
                 mixer.music.set_volume(volume)
@@ -163,5 +172,5 @@ class AdaMiniApp:
         self.gui.root.mainloop()
 
 if __name__ == "__main__":
-    app = AdaMiniApp()
+    app = MainApp()
     app.run()

@@ -1,7 +1,7 @@
 {
-    "global_volume": 100,
+    "global_volume": 99,
     "current_theme": "Retro Fnv",
     "show_monitor": true,
     "monitor_update_rate": 5,
-    "personality": "conversational"
+    "personality": "analytical"
 }
