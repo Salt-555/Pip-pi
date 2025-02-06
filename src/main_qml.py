@@ -1,24 +1,29 @@
 import sys
 from pathlib import Path
-from PySide6.QtCore import QUrl, QObject
+from PySide6.QtCore import QUrl
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtWidgets import QApplication
+from ui.controllers.theme_controller import ThemeController
+from ui.controllers.settings_controller import SettingsController
 
 # Ensure backend is in path
 project_root = Path(__file__).parent
 sys.path.append(str(project_root))
 
-class ApplicationController(QObject):
+class ApplicationController:
     def __init__(self):
-        super().__init__()
-        # Will add more initialization here as we build
         self.engine = None
+        self.theme_controller = ThemeController()
+        self.settings_controller = SettingsController()
         
     def initialize_qml(self):
         app = QApplication(sys.argv)
         self.engine = QQmlApplicationEngine()
         
-        # Set context properties here later
+        # Register controllers
+        context = self.engine.rootContext()
+        context.setContextProperty("themeController", self.theme_controller)
+        context.setContextProperty("settingsController", self.settings_controller)
         
         # Load the main QML file
         qml_file = Path(__file__).parent / "ui" / "qml" / "main.qml"

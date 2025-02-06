@@ -33,8 +33,7 @@ class ChatbotHandler:
                 "approx_tokens_per_message": 200
             },
             "analytical": {
-                "model_name": "deepseek-r1:7b",
-                "ai_name": "Pip-Pi",
+                "model_name": "deepseek-r1:1.5b",                "ai_name": "Pip-Pi",
                 "system_prompt": "Your name is Pip-Pi, and you are a highly analytical AI assistant focused on detailed analysis and logical problem-solving. Prioritize accuracy and depth in your responses. Provide thorough explanations with supporting evidence when applicable. Break down complex problems into clear steps.",
                 "max_tokens": 8000,
                 "approx_tokens_per_message": 200
