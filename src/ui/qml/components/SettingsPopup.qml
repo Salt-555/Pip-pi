@@ -217,54 +217,62 @@ Popup {
                 font.pixelSize: themeController.fontSize
             }
 
-            RowLayout {
-                spacing: 10
+            Item {
                 Layout.fillWidth: true
+                height: 32
 
+                // Background track
+                Rectangle {
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width
+                    height: 4
+                    radius: 2
+                    color: themeController.buttonColor
+
+                    // Progress track
+                    Rectangle {
+                        width: volumeSlider.visualPosition * parent.width
+                        height: parent.height
+                        color: themeController.accentColor
+                        radius: 2
+                    }
+                }
+
+                // The actual interactive slider
                 Slider {
                     id: volumeSlider
+                    anchors.fill: parent
                     from: 0
                     to: 100
                     stepSize: 1
                     value: settingsController.volume
-                    Layout.fillWidth: true
-
-                    onMoved: settingsController.volume = value
-
-                    background: Rectangle {
-                        x: volumeSlider.leftPadding
-                        y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
-                        width: volumeSlider.availableWidth
-                        height: 4
-                        radius: 2
-                        color: themeController.buttonColor
-
-                        Rectangle {
-                            width: volumeSlider.visualPosition * parent.width
-                            height: parent.height
-                            color: themeController.accentColor
-                            radius: 2
-                        }
-                    }
-
+                    live: true
+                    background: Item {} // Empty background since we draw it separately
                     handle: Rectangle {
-                        x: volumeSlider.leftPadding + volumeSlider.visualPosition * (volumeSlider.availableWidth - width)
-                        y: volumeSlider.topPadding + volumeSlider.availableHeight / 2 - height / 2
+                        x: volumeSlider.visualPosition * (volumeSlider.width - width)
+                        y: (volumeSlider.height - height) / 2
                         width: 16
                         height: 16
                         radius: 8
                         color: volumeSlider.pressed ? themeController.buttonActiveColor : themeController.buttonColor
                         border.color: themeController.accentColor
+                        z: 2  // Ensure handle is on top
+                    }
+
+                    onValueChanged: {
+                        if (pressed) {
+                            settingsController.volume = value
+                        }
                     }
                 }
+            }
 
-                Label {
-                    text: volumeSlider.value.toFixed(0) + "%"
-                    color: themeController.textColor
-                    font.family: themeController.fontFamily
-                    font.pixelSize: themeController.fontSize
-                    Layout.preferredWidth: 50
-                }
+            Label {
+                text: Math.round(volumeSlider.value) + "%"
+                color: themeController.textColor
+                font.family: themeController.fontFamily
+                font.pixelSize: themeController.fontSize
+                Layout.preferredWidth: 50
             }
         }
 

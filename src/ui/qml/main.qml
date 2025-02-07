@@ -136,21 +136,9 @@ ApplicationWindow {
                 spacing: 10
 
                 // Face animation area
-                Rectangle {
+                FaceAnimation {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 300
-                    color: "transparent"
-                    border.width: 1
-                    border.color: themeController.buttonColor
-                    radius: themeController.cornerRadius
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "[Face Animation]"
-                        color: themeController.textColor
-                        font.family: themeController.fontFamily
-                        font.pixelSize: themeController.fontSize
-                    }
                 }
 
                 // System monitor area

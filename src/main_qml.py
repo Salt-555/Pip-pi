@@ -1,10 +1,11 @@
 import sys
 from pathlib import Path
-from PySide6.QtCore import QUrl
+from PySide6.QtCore import QUrl, QTimer
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtWidgets import QApplication
 from ui.controllers.theme_controller import ThemeController
 from ui.controllers.settings_controller import SettingsController
+from ui.controllers.face_controller import FaceController
 
 # Ensure backend is in path
 project_root = Path(__file__).parent
@@ -15,6 +16,7 @@ class ApplicationController:
         self.engine = None
         self.theme_controller = ThemeController()
         self.settings_controller = SettingsController()
+        self.face_controller = FaceController()
         
     def initialize_qml(self):
         app = QApplication(sys.argv)
@@ -24,6 +26,7 @@ class ApplicationController:
         context = self.engine.rootContext()
         context.setContextProperty("themeController", self.theme_controller)
         context.setContextProperty("settingsController", self.settings_controller)
+        context.setContextProperty("FaceController", self.face_controller)
         
         # Load the main QML file
         qml_file = Path(__file__).parent / "ui" / "qml" / "main.qml"
@@ -31,6 +34,9 @@ class ApplicationController:
         
         if not self.engine.rootObjects():
             sys.exit(-1)
+        
+        # Play startup sound after a short delay to ensure mixer is ready
+        QTimer.singleShot(100, self.settings_controller.playStartupSound)
             
         return app.exec()
 
