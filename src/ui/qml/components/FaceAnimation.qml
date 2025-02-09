@@ -44,7 +44,7 @@ Rectangle {
     function setState(state) {
         currentState = state;
         frameIndex = 0;
-        currentFrames = FaceController.getFramesForState(state);
+        currentFrames = faceController.getFramesForState(state);
         faceDisplay.font.pixelSize = calculateFontSize();
     }
 

@@ -9,6 +9,8 @@ ApplicationWindow {
     visible: true
     width: 1000
     height: 800
+    minimumWidth: 800
+    minimumHeight: 600
     title: "Pip-Pi Assistant (QML)"
     color: themeController.backgroundColor
 
@@ -18,254 +20,198 @@ ApplicationWindow {
         y = Screen.height / 2 - height / 2
     }
 
-    // Main content layout
+    // Main layout container
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 10
         spacing: 10
 
-        // Top bar with personality selector
-        ComboBox {
-            id: personalitySelector
-            model: ["Conversational", "Analytical"]
-            implicitWidth: 200
-            currentIndex: model.indexOf(settingsController.personality.charAt(0).toUpperCase() + 
-                                      settingsController.personality.slice(1))
-
-            background: Rectangle {
-                color: themeController.buttonColor
-                radius: themeController.cornerRadius
-                border.width: 1
-                border.color: themeController.accentColor
-            }
-
-            contentItem: Text {
-                text: personalitySelector.displayText
-                color: themeController.textColor
-                font.family: themeController.fontFamily
-                font.pixelSize: themeController.fontSize
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignLeft
-                leftPadding: 10
-            }
-
-            popup: Popup {
-                y: personalitySelector.height
-                width: personalitySelector.width
-                padding: 1
-
-                background: Rectangle {
-                    color: themeController.backgroundColor
-                    border.color: themeController.accentColor
-                    radius: themeController.cornerRadius
-                }
-
-                contentItem: ListView {
-                    clip: true
-                    implicitHeight: contentHeight
-                    model: personalitySelector.popup.visible ? personalitySelector.delegateModel : null
-                    ScrollIndicator.vertical: ScrollIndicator {}
-                }
-            }
-
-            delegate: ItemDelegate {
-                width: personalitySelector.width
-                height: 40
-
-                background: Rectangle {
-                    color: highlighted ? themeController.buttonActiveColor : "transparent"
-                }
-
-                contentItem: Text {
-                    text: modelData
-                    color: themeController.textColor
-                    font.family: themeController.fontFamily
-                    font.pixelSize: themeController.fontSize
-                    verticalAlignment: Text.AlignVCenter
-                    leftPadding: 10
-                }
-
-                highlighted: personalitySelector.highlightedIndex === index
-            }
-
-            onActivated: settingsController.personality = currentText.toLowerCase()
-        }
-
-        // Middle section with chat and face
+        // Main content area
         RowLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
             spacing: 10
 
-            // Chat area (left side)
-            ScrollView {
-                id: chatScrollView
+            // Chat area
+            Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.preferredWidth: parent.width * 0.7
-                clip: true
+                Layout.minimumWidth: 400
+                color: "transparent"
+                border.width: 1
+                border.color: themeController.buttonColor
+                radius: themeController.cornerRadius
 
-                background: Rectangle {
-                    color: themeController.backgroundColor
-                    radius: themeController.cornerRadius
-                    border.width: 1
-                    border.color: themeController.buttonColor
-                }
+                ScrollView {
+                    id: chatScrollView
+                    anchors.fill: parent
+                    anchors.margins: 1
+                    clip: true
 
-                TextArea {
-                    id: chatArea
-                    readOnly: true
-                    wrapMode: TextArea.Wrap
-                    selectByMouse: true
-                    selectByKeyboard: true
-                    color: themeController.textColor
-                    font.family: themeController.fontFamily
-                    font.pixelSize: themeController.fontSize
-                    padding: 10
-
-                    background: Rectangle {
-                        color: "transparent"
-                    }
-                }
-            }
-
-            // Face and monitor area (right side)
-            ColumnLayout {
-                Layout.fillHeight: true
-                Layout.preferredWidth: parent.width * 0.3
-                spacing: 10
-
-                // Face animation area
-                FaceAnimation {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 300
-                }
-
-                // System monitor area
-                Rectangle {
-                    id: monitorArea
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 120
-                    color: "transparent"
-                    border.width: 1
-                    border.color: themeController.buttonColor
-                    radius: themeController.cornerRadius
-                    visible: true
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "[System Monitor]"
+                    TextArea {
+                        id: chatArea
+                        readOnly: true
+                        wrapMode: TextArea.Wrap
+                        selectByMouse: true
+                        selectByKeyboard: true
                         color: themeController.textColor
                         font.family: themeController.fontFamily
                         font.pixelSize: themeController.fontSize
-                    }
-                }
+                        padding: 10
 
-                Item {
-                    Layout.fillHeight: true
-                }
-            }
-        }
-
-        // Bottom input area
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 10
-
-            ScrollView {
-                Layout.fillWidth: true
-                Layout.preferredHeight: inputField.implicitHeight
-                clip: true
-
-                background: Rectangle {
-                    color: themeController.inputBgColor
-                    radius: themeController.cornerRadius
-                    border.width: 1
-                    border.color: themeController.buttonColor
-                }
-
-                TextArea {
-                    id: inputField
-                    placeholderText: "Type your message here..."
-                    placeholderTextColor: Qt.darker(themeController.textColor, 1.5)
-                    wrapMode: TextArea.Wrap
-                    color: themeController.textColor
-                    font.family: themeController.fontFamily
-                    font.pixelSize: themeController.fontSize
-                    padding: 10
-
-                    background: Rectangle {
-                        color: "transparent"
-                    }
-
-                    Keys.onReturnPressed: {
-                        if (!(event.modifiers & Qt.ShiftModifier)) {
-                            // Send message handling will go here
-                            event.accepted = true
+                        background: Rectangle {
+                            color: "transparent"
                         }
                     }
                 }
             }
 
-            Button {
-                id: sendButton
-                text: "Send"
-                implicitWidth: 100
-                implicitHeight: 40
+            // Face area
+            ColumnLayout {
+                Layout.fillHeight: true
+                Layout.minimumWidth: 200
+                Layout.preferredWidth: parent.width * 0.3
+                Layout.maximumWidth: parent.width * 0.4
+                spacing: 10
 
-                background: Rectangle {
-                    color: parent.pressed ? themeController.buttonActiveColor : themeController.buttonColor
-                    radius: themeController.cornerRadius
-                    border.width: 1
-                    border.color: themeController.accentColor
-
-                    Behavior on color {
-                        ColorAnimation { duration: 50 }
-                    }
+                FaceAnimation {
+                    Layout.fillWidth: true
+                    Layout.minimumHeight: 250
+                    Layout.preferredHeight: 300
+                    Layout.maximumHeight: 400
                 }
 
-                contentItem: Text {
-                    text: sendButton.text
-                    color: themeController.textColor
-                    font.family: themeController.fontFamily
-                    font.pixelSize: themeController.fontSize
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
+                Item {
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                }
+            }
+        }
+
+        // Input area
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.preferredHeight: Math.min(Math.max(35, inputField.contentHeight + 16), 75)
+            Layout.maximumHeight: 75
+            Layout.bottomMargin: 10
+            spacing: 10
+
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                color: themeController.inputBgColor
+                radius: themeController.cornerRadius
+                border.width: 1
+                border.color: themeController.buttonColor
+
+                ScrollView {
+                    anchors.fill: parent
+                    anchors.margins: 1
+                    clip: true
+
+                    TextArea {
+                        id: inputField
+                        height: parent.height
+                        placeholderText: "Type your message here..."
+                        placeholderTextColor: Qt.darker(themeController.textColor, 1.5)
+                        wrapMode: TextArea.Wrap
+                        color: themeController.textColor
+                        font.family: themeController.fontFamily
+                        font.pixelSize: themeController.fontSize
+                        topPadding: 8
+                        bottomPadding: 8
+                        leftPadding: 10
+                        rightPadding: 10
+
+                        background: Rectangle {
+                            color: "transparent"
+                        }
+
+                        Keys.onReturnPressed: {
+                            if (!(event.modifiers & Qt.ShiftModifier)) {
+                                if (text.trim().length > 0) {
+                                    // TODO: Implement message sending
+                                }
+                                event.accepted = true
+                            }
+                        }
+                    }
                 }
             }
 
-            Button {
-                id: settingsButton
-                text: "Settings"
-                implicitWidth: 100
-                implicitHeight: 40
+            // Buttons
+            RowLayout {
+                Layout.preferredWidth: 220
+                Layout.preferredHeight: 35
+                spacing: 10
 
-                background: Rectangle {
-                    color: parent.pressed ? themeController.buttonActiveColor : themeController.buttonColor
-                    radius: themeController.cornerRadius
-                    border.width: 1
-                    border.color: themeController.accentColor
+                Button {
+                    id: sendButton
+                    Layout.preferredWidth: 100
+                    Layout.preferredHeight: 35
+                    text: "Send"
 
-                    Behavior on color {
-                        ColorAnimation { duration: 50 }
+                    background: Rectangle {
+                        color: parent.pressed ? themeController.buttonActiveColor : themeController.buttonColor
+                        radius: themeController.cornerRadius
+                        border.width: 1
+                        border.color: themeController.accentColor
+
+                        Behavior on color {
+                            ColorAnimation { duration: 50 }
+                        }
+                    }
+
+                    contentItem: Text {
+                        text: sendButton.text
+                        color: themeController.textColor
+                        font.family: themeController.fontFamily
+                        font.pixelSize: themeController.fontSize
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    onClicked: {
+                        if (inputField.text.trim().length > 0) {
+                            // TODO: Implement message sending
+                        }
                     }
                 }
 
-                contentItem: Text {
-                    text: settingsButton.text
-                    color: themeController.textColor
-                    font.family: themeController.fontFamily
-                    font.pixelSize: themeController.fontSize
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
+                Button {
+                    id: settingsButton
+                    Layout.preferredWidth: 100
+                    Layout.preferredHeight: 35
+                    text: "Settings"
 
-                onClicked: settingsPopup.open()
+                    background: Rectangle {
+                        color: parent.pressed ? themeController.buttonActiveColor : themeController.buttonColor
+                        radius: themeController.cornerRadius
+                        border.width: 1
+                        border.color: themeController.accentColor
+
+                        Behavior on color {
+                            ColorAnimation { duration: 50 }
+                        }
+                    }
+
+                    contentItem: Text {
+                        text: settingsButton.text
+                        color: themeController.textColor
+                        font.family: themeController.fontFamily
+                        font.pixelSize: themeController.fontSize
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    onClicked: settingsPopup.open()
+                }
             }
         }
     }
 
-    // Settings popup component
+    // Settings popup
     SettingsPopup {
         id: settingsPopup
     }

@@ -26,7 +26,7 @@ class ApplicationController:
         context = self.engine.rootContext()
         context.setContextProperty("themeController", self.theme_controller)
         context.setContextProperty("settingsController", self.settings_controller)
-        context.setContextProperty("FaceController", self.face_controller)
+        context.setContextProperty("faceController", self.face_controller)
         
         # Load the main QML file
         qml_file = Path(__file__).parent / "ui" / "qml" / "main.qml"
