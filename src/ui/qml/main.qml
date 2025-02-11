@@ -10,8 +10,8 @@ ApplicationWindow {
     width: 1000
     height: 800
     minimumWidth: 800
-    minimumHeight: 600
-    title: "Pip-Pi Assistant (QML)"
+    minimumHeight: 500
+    title: "Pip-Pi Assistant"
     color: themeController.backgroundColor
 
     // Center on screen on startup
@@ -20,11 +20,89 @@ ApplicationWindow {
         y = Screen.height / 2 - height / 2
     }
 
-    // Main layout container
+    // Custom message delegate for chat
+    Component {
+        id: messageDelegate
+        Column {
+            width: ListView.view.width
+            spacing: 4
+            topPadding: 4
+            bottomPadding: 4
+
+            Rectangle {
+                width: messageContent.width + 24
+                height: messageContent.height + 16
+                color: {
+                    switch(model.type) {
+                        case "user": return Qt.alpha(themeController.accentColor, 0.1)
+                        case "ai": return Qt.alpha(themeController.aiColor, 0.1)
+                        case "error": return Qt.alpha("#FF0000", 0.1)
+                        default: return "transparent"
+                    }
+                }
+                radius: 8
+                anchors.right: model.type === "user" ? parent.right : undefined
+                anchors.left: model.type !== "user" ? parent.left : undefined
+
+                Text {
+                    id: messageContent
+                    text: model.text
+                    color: {
+                        switch(model.type) {
+                            case "user": return themeController.accentColor
+                            case "ai": return themeController.aiColor
+                            case "error": return "#FF0000"
+                            default: return themeController.textColor
+                        }
+                    }
+                    font.family: themeController.fontFamily
+                    font.pixelSize: themeController.fontSize
+                    wrapMode: Text.WordWrap
+                    width: Math.min(parent.parent.width * 0.9, implicitWidth)
+                    anchors.centerIn: parent
+                }
+            }
+        }
+    }
+
+    // Main layout
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 10
         spacing: 10
+
+        // Personality selector
+        ComboBox {
+            id: personalitySelector
+            Layout.alignment: Qt.AlignLeft
+            model: ["Conversational", "Analytical"]
+            currentIndex: {
+                if (settingsController && settingsController.personality) {
+                    return settingsController.personality === "conversational" ? 0 : 1
+                }
+                return 0
+            }
+
+            background: Rectangle {
+                color: themeController.buttonColor
+                radius: themeController.cornerRadius
+                border.width: 1
+                border.color: themeController.accentColor
+            }
+
+            contentItem: Text {
+                text: personalitySelector.displayText
+                color: themeController.textColor
+                font.family: themeController.fontFamily
+                font.pixelSize: themeController.fontSize
+                verticalAlignment: Text.AlignVCenter
+                leftPadding: 10
+            }
+
+            onActivated: function(index) {
+                chatController.switchPersonality(model[index].toLowerCase())
+            }
+        }
 
         // Main content area
         RowLayout {
@@ -43,31 +121,28 @@ ApplicationWindow {
                 border.color: themeController.buttonColor
                 radius: themeController.cornerRadius
 
-                ScrollView {
-                    id: chatScrollView
+                ListView {
+                    id: chatView
                     anchors.fill: parent
-                    anchors.margins: 1
+                    anchors.margins: 10
                     clip: true
-
-                    TextArea {
-                        id: chatArea
-                        readOnly: true
-                        wrapMode: TextArea.Wrap
-                        selectByMouse: true
-                        selectByKeyboard: true
-                        color: themeController.textColor
-                        font.family: themeController.fontFamily
-                        font.pixelSize: themeController.fontSize
-                        padding: 10
-
-                        background: Rectangle {
-                            color: "transparent"
-                        }
+                    model: ListModel { 
+                        id: chatModel 
+                        property int messageCounter: 0
                     }
+                    delegate: messageDelegate
+                    spacing: 8
+                    
+                    ScrollBar.vertical: ScrollBar {
+                        active: chatView.moving || chatView.pressed
+                    }
+                    
+                    // Auto-scroll to bottom
+                    onCountChanged: positionViewAtEnd()
                 }
             }
 
-            // Face area
+            // Right side panel
             ColumnLayout {
                 Layout.fillHeight: true
                 Layout.minimumWidth: 200
@@ -75,16 +150,18 @@ ApplicationWindow {
                 Layout.maximumWidth: parent.width * 0.4
                 spacing: 10
 
+                // Face animation
                 FaceAnimation {
+                    id: faceAnimation
                     Layout.fillWidth: true
                     Layout.minimumHeight: 250
                     Layout.preferredHeight: 300
                     Layout.maximumHeight: 400
                 }
 
+                // Spacer
                 Item {
                     Layout.fillHeight: true
-                    Layout.fillWidth: true
                 }
             }
         }
@@ -94,16 +171,17 @@ ApplicationWindow {
             Layout.fillWidth: true
             Layout.preferredHeight: Math.min(Math.max(35, inputField.contentHeight + 16), 75)
             Layout.maximumHeight: 75
-            Layout.bottomMargin: 10
             spacing: 10
 
+            // Text input
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 color: themeController.inputBgColor
                 radius: themeController.cornerRadius
                 border.width: 1
-                border.color: themeController.buttonColor
+                border.color: chatController.isThinking ? 
+                    themeController.aiColor : themeController.buttonColor
 
                 ScrollView {
                     anchors.fill: parent
@@ -112,13 +190,14 @@ ApplicationWindow {
 
                     TextArea {
                         id: inputField
-                        height: parent.height
-                        placeholderText: "Type your message here..."
+                        placeholderText: chatController.isThinking ? 
+                            "Thinking..." : "Type your message here..."
                         placeholderTextColor: Qt.darker(themeController.textColor, 1.5)
                         wrapMode: TextArea.Wrap
                         color: themeController.textColor
                         font.family: themeController.fontFamily
                         font.pixelSize: themeController.fontSize
+                        enabled: !chatController.isThinking
                         topPadding: 8
                         bottomPadding: 8
                         leftPadding: 10
@@ -128,11 +207,9 @@ ApplicationWindow {
                             color: "transparent"
                         }
 
-                        Keys.onReturnPressed: {
+                        Keys.onReturnPressed: function() {
                             if (!(event.modifiers & Qt.ShiftModifier)) {
-                                if (text.trim().length > 0) {
-                                    // TODO: Implement message sending
-                                }
+                                sendMessage()
                                 event.accepted = true
                             }
                         }
@@ -146,14 +223,18 @@ ApplicationWindow {
                 Layout.preferredHeight: 35
                 spacing: 10
 
+                // Send button
                 Button {
                     id: sendButton
                     Layout.preferredWidth: 100
                     Layout.preferredHeight: 35
                     text: "Send"
+                    enabled: !chatController.isThinking && inputField.text.trim().length > 0
 
                     background: Rectangle {
-                        color: parent.pressed ? themeController.buttonActiveColor : themeController.buttonColor
+                        color: parent.pressed ? themeController.buttonActiveColor : 
+                               parent.enabled ? themeController.buttonColor : 
+                               Qt.darker(themeController.buttonColor, 1.5)
                         radius: themeController.cornerRadius
                         border.width: 1
                         border.color: themeController.accentColor
@@ -165,20 +246,18 @@ ApplicationWindow {
 
                     contentItem: Text {
                         text: sendButton.text
-                        color: themeController.textColor
+                        color: sendButton.enabled ? themeController.textColor : 
+                               Qt.darker(themeController.textColor, 1.5)
                         font.family: themeController.fontFamily
                         font.pixelSize: themeController.fontSize
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
 
-                    onClicked: {
-                        if (inputField.text.trim().length > 0) {
-                            // TODO: Implement message sending
-                        }
-                    }
+                    onClicked: sendMessage()
                 }
 
+                // Settings button
                 Button {
                     id: settingsButton
                     Layout.preferredWidth: 100
@@ -186,7 +265,8 @@ ApplicationWindow {
                     text: "Settings"
 
                     background: Rectangle {
-                        color: parent.pressed ? themeController.buttonActiveColor : themeController.buttonColor
+                        color: parent.pressed ? themeController.buttonActiveColor : 
+                               themeController.buttonColor
                         radius: themeController.cornerRadius
                         border.width: 1
                         border.color: themeController.accentColor
@@ -208,6 +288,56 @@ ApplicationWindow {
                     onClicked: settingsPopup.open()
                 }
             }
+        }
+    }
+
+    // Function to handle message sending
+    function sendMessage() {
+        let text = inputField.text.trim()
+        if (text.length > 0 && !chatController.isThinking) {
+            chatController.sendMessage(text)
+            inputField.text = ""
+        }
+    }
+
+    // Chat controller connections
+    Connections {
+        target: chatController
+        
+        function onMessageReceived(message, type) {
+            chatModel.messageCounter++
+            chatModel.append({
+                "messageId": chatModel.messageCounter,
+                "text": message, 
+                "type": type
+            })
+        }
+        
+        function onMessageUpdated(messageId, newText) {
+            // Find and update the message with the matching ID
+            for(let i = 0; i < chatModel.count; i++) {
+                if(chatModel.get(i).messageId === messageId) {
+                    chatModel.setProperty(i, "text", newText)
+                    break
+                }
+            }
+        }
+        
+        function onThinkingStateChanged(thinking) {
+            if (thinking) {
+                faceAnimation.setState("THINKING")
+            } else {
+                faceAnimation.setState("IDLE")
+            }
+        }
+        
+        function onErrorOccurred(error) {
+            chatModel.messageCounter++
+            chatModel.append({
+                "messageId": chatModel.messageCounter,
+                "text": error,
+                "type": "error"
+            })
         }
     }
 
