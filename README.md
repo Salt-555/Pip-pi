@@ -4,12 +4,12 @@ A desktop AI assistant built with Python, featuring real-time system monitoring,
 
 ## Features
 
-- Interactive chat interface with multiple AI personalities
-- Real-time system monitoring (CPU and memory usage)
-- Customizable themes
-- Animated ASCII face expressions
-- Audio feedback
-- Cross-platform compatibility
+- Interactive chat interface combining the strengths of multiple LLM's
+- Easily configurable to use your favorite model for it's brains.
+- Customizable themes, easy to add new styles.
+- Animated ASCII face expressions.
+- Audio feedback.
+- Cross-platform compatibility.
 
 ## Prerequisites
 
