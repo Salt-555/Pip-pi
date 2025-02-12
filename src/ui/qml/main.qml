@@ -71,36 +71,18 @@ ApplicationWindow {
         anchors.margins: 10
         spacing: 10
 
-        // Personality selector
-        ComboBox {
-            id: personalitySelector
-            Layout.alignment: Qt.AlignLeft
-            model: ["Conversational", "Analytical"]
-            currentIndex: {
-                if (settingsController && settingsController.personality) {
-                    return settingsController.personality === "conversational" ? 0 : 1
+        // Title display area
+        TitleDisplay {
+            id: titleDisplay
+            Layout.fillWidth: true
+            Layout.preferredHeight: 60
+            currentText: settingsController.personality.toUpperCase()
+
+            Connections {
+                target: settingsController
+                function onPersonalityChanged() {
+                    titleDisplay.updateText(settingsController.personality.toUpperCase())
                 }
-                return 0
-            }
-
-            background: Rectangle {
-                color: themeController.buttonColor
-                radius: themeController.cornerRadius
-                border.width: 1
-                border.color: themeController.accentColor
-            }
-
-            contentItem: Text {
-                text: personalitySelector.displayText
-                color: themeController.textColor
-                font.family: themeController.fontFamily
-                font.pixelSize: themeController.fontSize
-                verticalAlignment: Text.AlignVCenter
-                leftPadding: 10
-            }
-
-            onActivated: function(index) {
-                chatController.switchPersonality(model[index].toLowerCase())
             }
         }
 
@@ -157,6 +139,31 @@ ApplicationWindow {
                     Layout.minimumHeight: 250
                     Layout.preferredHeight: 300
                     Layout.maximumHeight: 400
+
+                    Connections {
+                        target: settingsController
+                        function onPersonalityChanged() {
+                            if (settingsController.personality === "analytical") {
+                                faceAnimation.setState("ANALYSIS")
+                            } else if (settingsController.personality === "conversational") {
+                                faceAnimation.setState("CHATTING")
+                            }
+                        }
+                    }
+
+                    Timer {
+                        id: stateResetTimer
+                        interval: 4000
+                        repeat: false
+                        onTriggered: faceAnimation.setState("IDLE")
+                    }
+
+                    // Watch for state changes and restart timer when needed
+                    onCurrentStateChanged: {
+                        if (currentState === "ANALYSIS" || currentState === "CHATTING") {
+                            stateResetTimer.restart()
+                        }
+                    }
                 }
 
                 // Spacer
@@ -207,7 +214,7 @@ ApplicationWindow {
                             color: "transparent"
                         }
 
-                        Keys.onReturnPressed: function() {
+                        Keys.onReturnPressed: function(event) {
                             if (!(event.modifiers & Qt.ShiftModifier)) {
                                 sendMessage()
                                 event.accepted = true
